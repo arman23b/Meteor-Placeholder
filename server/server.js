@@ -46,23 +46,48 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
   var data = JSON.parse(req.body.data);
 
   for (var beaconId in data) {
-    var item = getOrCreateItem(beaconId);
-    if (station.registered) {
-      Items.update(item._id, {$set: {room : station.room}});
+    var item = getOrCreateItem(beaconId, station, data[beaconId]);
+    var closestStation = findClosestStation(item);
+    if (closestStation != null && closestStation.registered) {
+      Items.update(item._id, {$set: {room : closestStation.room}});
     }
   }
   res.end("");
 }); 
 
 
-function getOrCreateItem(beaconId) {
+function findClosestStation(item) {
+  var distances = item.distances;
+  var maxRSI = Number.MIN_VALUE;
+  var closestStationID;
+  for (var stationID in distances) {
+    if (distances[stationID] >= maxRSI) {
+      maxRSI = distances[stationID];
+      closestStationID = stationID;
+    }
+  }
+  var closestStation = Stations.findOne({_id : closestStationID});
+  return closestStation;
+}
+
+
+function getOrCreateItem(beaconId, station, rsi) {
   var item = Items.findOne({ beaconId : beaconId });
+  var stationID = station._id;
   if (item == null) {
+    var distances = {};
+    distances[stationID] = rsi;
     var id = Items.insert({
       registered: false,
-      beaconId: beaconId
+      beaconId: beaconId,
+      distances: distances
     });
     item = Items.findOne({ _id: id });
+  } else {
+    // Update or add new rsi value for this station
+    var newDistances = item.distances;
+    newDistances[stationID] = rsi;
+    Items.update(item._id, {$set: {distances : newDistances}});
   }
   return item;
 }
