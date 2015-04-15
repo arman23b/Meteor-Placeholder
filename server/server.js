@@ -58,7 +58,7 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
 
 function findClosestStation(item) {
   var distances = item.distances;
-  var maxRSI = Number.MIN_VALUE;
+  var maxRSI = -10000;
   var closestStationID;
   for (var stationID in distances) {
     if (distances[stationID] >= maxRSI) {
