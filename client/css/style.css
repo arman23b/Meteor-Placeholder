@@ -98,6 +98,17 @@ div.info {
     border-bottom-color: #33C3F0;
 }
 
+.active.text-link:hover {
+    color: #fff;
+    background: #33C3F0;
+}
+
+.inactive.text-link:hover {
+    color: #fff;
+    background: #000000;
+    cursor: default;
+}
+
 input:invalid {
   border:1px solid red;
 }

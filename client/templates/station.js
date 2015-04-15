@@ -1,6 +1,13 @@
 Template.station.helpers({
     rooms: function () {
         return Rooms.find({});
+    },
+
+    is_active: function () {
+        var curTime = new Date();
+        var timeDiff = curTime - this.lastUpdate;
+        var diffSecs = Math.ceil(timeDiff / 1000);
+        return diffSecs > TIMEOUT;
     }
 });
 

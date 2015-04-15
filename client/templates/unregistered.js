@@ -1,8 +1,16 @@
 Template.unregistered.helpers({
     stations: function () {
-        return Stations.find({registered: false});
+        // filter out expired stations
+        var expireTime = new Date();
+        expireTime.setSeconds(expireTime.getSeconds() - TIMEOUT);
+        return Stations.find({registered: false,
+                              time: {$gte: expireTime}});
     },
     items: function () {
-        return Items.find({registered: false});
+        // filter out expired items
+        var expireTime = new Date();
+        expireTime.setSeconds(expireTime.getSeconds() - TIMEOUT);
+        return Items.find({registered: false,
+                           time: {$gte: expireTime}});
     },
 });

@@ -1,3 +1,16 @@
+Template.item.helpers({
+    is_active: function () {
+        var curTime = new Date();
+        var timeDiff = curTime - this.lastUpdate;
+        var diffSecs = Math.ceil(timeDiff / 1000);
+        if (diffSecs > TIMEOUT) {
+            return "active";
+        } else {
+            return "inactive";
+        }
+    }
+});
+
 Template.item.events({
 
     "submit form": function (event) {

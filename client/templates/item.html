@@ -1,6 +1,6 @@
 <template name="item">
     <li class="popover-item">
-        <a class="text-link">
+        <a class="text-link {{is_active}}">
             {{#if registered}}
             <div class="name">{{name}}</div>
             {{else}}
