@@ -58,11 +58,11 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
 
 function findClosestStation(item) {
   var distances = item.distances;
-  var maxRSI = -10000;
+  var maxRSSI = -10000;
   var closestStationID;
   for (var stationID in distances) {
-    if (distances[stationID] >= maxRSI) {
-      maxRSI = distances[stationID];
+    if (distances[stationID] >= maxRSSI) {
+      maxRSSI = distances[stationID];
       closestStationID = stationID;
     }
   }
@@ -71,12 +71,12 @@ function findClosestStation(item) {
 }
 
 
-function getOrCreateItem(beaconId, station, rsi) {
+function getOrCreateItem(beaconId, station, rssi) {
   var item = Items.findOne({ beaconId : beaconId });
   var stationID = station._id;
   if (item == null) {
     var distances = {};
-    distances[stationID] = rsi;
+    distances[stationID] = rssi;
     var id = Items.insert({
       registered: false,
       beaconId: beaconId,
@@ -84,9 +84,9 @@ function getOrCreateItem(beaconId, station, rsi) {
     });
     item = Items.findOne({ _id: id });
   } else {
-    // Update or add new rsi value for this station
+    // Update or add new rssi value for this station
     var newDistances = item.distances;
-    newDistances[stationID] = rsi;
+    newDistances[stationID] = rssi;
     Items.update(item._id, {$set: {distances : newDistances}});
   }
   return item;
