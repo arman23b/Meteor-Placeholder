@@ -1,0 +1,42 @@
+<template name="registered">
+    <table class="u-full-width">
+        <thead>
+            <tr>
+                <th class="four columns text title">Rooms</th>
+                <th class="four columns text title">Stations</th>
+                <th class="four columns text title">Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="four columns no-boarder">
+                    <ul class="popover-list" id="rooms-list">
+                        {{#each rooms}}
+                        {{>room}}
+                        {{/each}}
+                    </ul>
+                    <form class="new-room">
+                        <input type="submit" value="Add" class="inline-button">
+                        <div class="same-line">
+                            <input class="u-full-width" type="text" name="name" placeholder="Room name"/>
+                        </div>
+                    </form>
+                </td>
+                <td class="four columns no-boarder">
+                    <ul class="popover-list" id="stations-list">
+                        {{#each stations}}
+                        {{>station}}
+                        {{/each}}
+                    </ul>
+                </td>
+                <td class="four columns no-boarder">
+                    <ul class="popover-list" id="items-list">
+                        {{#each items}}
+                        {{>item}}
+                        {{/each}}
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</template>

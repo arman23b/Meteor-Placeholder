@@ -1,0 +1,30 @@
+<template name="unregistered">
+    <table class="u-full-width">
+        <thead>
+            <tr>
+                <th class="four columns no-boarder"></th>
+                <th class="four columns text title">Unregistered Stations</th>
+                <th class="four columns text title">Unregistered Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="four columns no-boarder"></td>
+                <td class="four columns no-boarder">
+                    <ul class="popover-list" id="unregisteredStations-list">
+                        {{#each stations}}
+                        {{>station}}
+                        {{/each}}
+                    </ul>
+                </td>
+                <td class="four columns no-boarder">
+                    <ul class="popover-list" id="unregisteredItems-list">
+                        {{#each items}}
+                        {{>item}}
+                        {{/each}}
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</template>

@@ -1,0 +1,25 @@
+<template name="station">
+    <li class="popover-item">
+        <a class="text-link">
+            {{#if registered}}
+                <div class="name">{{name}}</div>
+            {{/if}}
+            <div class="info">ip : {{ip}}</div>
+            {{#if registered}}
+                <div class="info">room : {{room.name}}</div>
+            {{/if}}
+        </a>
+        {{#unless registered}}
+        <form>
+            <input type="text" name="name" class="u-full-width" placeholder="Station name"/>
+            <select class="u-full-width" name="room">
+                <option value="" disabled selected>Select room</option>
+                {{#each rooms}}
+                    <option>{{name}}</option>
+                {{/each}}
+            </select>
+            <input type="submit" class="u-full-width" value="Register"/>
+        </form>
+        {{/unless}}
+    </li>
+</template>

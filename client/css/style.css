@@ -1,0 +1,103 @@
+div.same-line {
+    overflow: hidden;
+    padding: 0em 0em;
+}
+
+.inline-button {
+    float: right;
+}
+
+form {
+    margin-bottom: 0em;
+    /*height: 3em;*/
+}
+
+input, select {
+    margin-bottom: 0em;
+    padding: 0em 0em;
+    line-height: 1em;
+}
+
+input[type="submit"], button {
+    padding: 0 0.5em;
+    font-size: 0.7em;
+    margin-bottom: 0em;
+}
+
+.text-link,
+.text {
+    position: relative;
+    color: #222;
+    display: block;
+    padding: 8px 20px;
+    border-bottom: 3px solid #eee;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: .1rem;
+}
+
+.header {
+    margin-top: 3rem;
+    text-align: center;
+    border-bottom: 3px solid #eee;
+    padding: 2rem 0;
+    font-size: 3.0rem;
+}
+
+.title {
+    margin-top: 1rem;
+    font-size: 1.7rem;
+}
+
+.section {
+    padding: 2rem 0;
+    margin-bottom: 0;
+}
+
+td.no-boarder,
+th.no-boarder {
+    border-bottom: 0px;
+}
+
+div.name {
+    margin-bottom: 0rem;
+}
+
+div.info {
+    float: center;
+    margin-bottom: 0rem;
+    font-size: 0.9rem;
+}
+
+.popover-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.popover-item {
+    padding: 0;
+    margin: 0;
+    cursor: move;
+}
+
+.popover-item:first-child .popover-link {
+    border-radius: 4px 4px 0 0;
+}
+
+.popover-item:last-child .popover-link {
+    border-radius: 0 0 4px 4px;
+    border-bottom-width: 0;
+}
+
+.text:hover,
+.popover-item:first-child .text-link:hover:after {
+    border-bottom-color: #33C3F0;
+}
+
+input:invalid {
+  border:1px solid red;
+}
