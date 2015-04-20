@@ -7,7 +7,11 @@ Template.station.helpers({
         var curTime = new Date();
         var timeDiff = curTime - this.lastUpdate;
         var diffSecs = Math.ceil(timeDiff / 1000);
-        return diffSecs > TIMEOUT;
+        if (diffSecs > TIMEOUT) {
+            return "inactive";
+        } else {
+            return "active";
+        }
     }
 });
 
@@ -19,10 +23,18 @@ Template.station.events({
     "submit form": function (event) {
         var name = event.target.name.value;
         var room = Rooms.findOne({ name : Session.get("room") });
+        if (name == "" || room == null) {
+            return false;
+        }
         Stations.update(this._id, {$set: {name : name, registered : true, room : room}});
         // Clear form
         event.target.name.value = "";
         // Prevent default form submit
         return false;
     },
+
+    "click button": function (event) {
+        Stations.update(this._id, {$set: {registered : false, lastUpdate : new Date()}});
+        return true;
+    }
 });

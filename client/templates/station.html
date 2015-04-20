@@ -8,6 +8,10 @@
             {{#if registered}}
                 <div class="info">room : {{room.name}}</div>
             {{/if}}
+            <div class="info">last update : {{lastUpdate}}</div>
+            {{#if registered}}
+            <button>unregister station</button>
+            {{/if}}
         </a>
         {{#unless registered}}
         <form>
