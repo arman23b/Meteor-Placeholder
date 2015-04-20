@@ -40,7 +40,10 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
     if (station.ip != stationIpAddress) {
       // Update ipAddress
       Stations.update(station._id, {$set: {ip: stationIpAddress,
-                                           lastUpdate: new Date().valueOf()}});
+                                           lastUpdate: new Date()}});
+    } else {
+      // Update lastUpdate time
+      Stations.update(station._id, {$set: {lastUpdate: new Date()}});
     }
   }
 
@@ -51,7 +54,7 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
     var closestStation = findClosestStation(item);
     if (closestStation != null && closestStation.registered) {
       Items.update(item._id, {$set: {room: closestStation.room,
-                                     lastUpdate: new Date().valueOf()}});
+                                     lastUpdate: new Date()}});
     }
   }
   res.end("");
@@ -83,15 +86,16 @@ function getOrCreateItem(beaconId, station, rssi) {
       registered: false,
       beaconId: beaconId,
       distances: distances,
-      lastUpdate: new Date().valueOf()
+      lastUpdate: new Date()
     });
     item = Items.findOne({ _id: id });
+    return item;
   } else {
     // Update or add new rssi value for this station
     var newDistances = item.distances;
     newDistances[stationID] = rssi;
     Items.update(item._id, {$set: {distances: newDistances,
-                                   lastUpdate: new Date().valueOf()}});
+                                   lastUpdate: new Date()}});
     return item;
   }
 }
@@ -103,7 +107,7 @@ function getOrCreateStation(stationIpAddress) {
     var id = Stations.insert({
       registered: false,
       ip: stationIpAddress,
-      lastUpdate: new Date().valueOf()
+      lastUpdate: new Date()
     });
     station = Stations.findOne({ _id: id });
   }
