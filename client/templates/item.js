@@ -22,6 +22,11 @@ Template.item.events({
         return false;
     },
 
+    "click .unregister-button": function (event) {
+        Items.update(this._id, {$set: {registered : false, lastUpdate : new Date()}});
+        return true;
+    },
+
     "click .search-button": function (event) {
         var beaconId = this.beaconId;
         // Call server method to broadcast uuid

@@ -16,6 +16,9 @@
             <div class="info">room : {{room.name}}</div>
             {{/if}}
             <div class="info">last update : {{lastUpdate}}</div>
+            {{#if registered}}
+            <button class="unregister-button">unregister item</button>
+            {{/if}}
             <button class="search-button">Search</button>
         </a>
     </li>
