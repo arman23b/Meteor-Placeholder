@@ -4,9 +4,9 @@ Template.item.helpers({
         var timeDiff = curTime - this.lastUpdate;
         var diffSecs = Math.ceil(timeDiff / 1000);
         if (diffSecs > TIMEOUT) {
-            return "active";
-        } else {
             return "inactive";
+        } else {
+            return "active";
         }
     }
 });
