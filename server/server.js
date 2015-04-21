@@ -23,6 +23,15 @@ Meteor.startup(function () {
           Stations.update(station._id, {$set: {name: null, registered: false, room: null}});
         }
       });
+    },
+
+    removeRoomFromItems: function (roomID) {
+      var items = Items.find({});
+      items.forEach(function (item) {
+        if (item.room && item.room._id == roomID) {
+          Items.update(item._id, {$set: {name: null, registered: false, room: null}});
+        }
+      });
     }
 
   });
