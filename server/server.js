@@ -16,13 +16,15 @@ Meteor.startup(function () {
       });
     },
 
-    removeRoomFromStations: function (room) {
-      console.log("removing rooms");
-      // TODO: why isn't this working?
-      Stations.update({room: room},
-                      {$set: {registered: false, room: null}},
-                      {multi: true});
+    removeRoomFromStations: function (roomID) {
+      var stations = Stations.find({});
+      stations.forEach(function (station) {
+        if (station.room && station.room._id == roomID) {
+          Stations.update(station._id, {$set: {name: null, registered: false, room: null}});
+        }
+      });
     }
+
   });
 });
 

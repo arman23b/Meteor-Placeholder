@@ -23,9 +23,4 @@ Template.registered.events({
         return false;
     },
 
-    "click button": function (event) {
-        Rooms.remove(this._id);
-        return true;
-    }
-
 });
