@@ -14,6 +14,14 @@ Meteor.startup(function () {
             if (err != null) console.log("Error", "Couldn't broadcast uuid to " + station.ip);
           });
       });
+    },
+
+    removeRoomFromStations: function (room) {
+      console.log("removing rooms");
+      // TODO: why isn't this working?
+      Stations.update({room: room},
+                      {$set: {registered: false, room: null}},
+                      {multi: true});
     }
   });
 });
