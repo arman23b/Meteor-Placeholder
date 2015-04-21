@@ -66,7 +66,38 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
     }
   }
   res.end("");
-}); 
+});
+
+
+Router.route("/sendHeartbeat", { where : 'server' }).post(function (req, res, next) {
+
+  // TODO: code reuse! Reuses lots of newData's code
+  var stationID = req.body.id;
+  var stationIpAddress = this.request.headers["x-forwarded-for"];
+  var station = Stations.findOne({_id: stationID});
+  if (station == null) {
+    // No station with such id
+    station = getOrCreateStation(stationIpAddress);
+    // Need to send the new id
+    try {
+      var params = {data: JSON.stringify({"id": station._id})};
+      HTTP.post("http://" + stationIpAddress + ":" + PORT + "/" + SET_ID_ROUTE, {params: params});
+    }
+    catch (error) {
+      console.log("Error", "Couldn't send POST request to " + stationIpAddress)
+    }
+  } else {
+    // Station with this id is in database
+    if (station.ip != stationIpAddress) {
+      // Update ipAddress
+      Stations.update(station._id, {$set: {ip: stationIpAddress,
+                                           lastUpdate: new Date()}});
+    } else {
+      // Update lastUpdate time
+      Stations.update(station._id, {$set: {lastUpdate: new Date()}});
+    }
+  }
+});
 
 
 function findClosestStation(item) {
