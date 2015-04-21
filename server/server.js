@@ -97,6 +97,7 @@ Router.route("/sendHeartbeat", { where : 'server' }).post(function (req, res, ne
       Stations.update(station._id, {$set: {lastUpdate: new Date()}});
     }
   }
+  res.end("");
 });
 
 
