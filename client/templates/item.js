@@ -14,8 +14,13 @@ Template.item.helpers({
 Template.item.events({
 
     "submit form": function (event) {
-        var name = event.target.name.value;
-        Items.update(this._id, {$set: {name : name, registered : true}});
+        var name = event.target.name.value.toUpperCase();
+        var item = Items.findOne({name: name});
+        if (item != null) {
+            Notifications.error("Cannot register a beacon", "Beacon " + name + " already exists");
+        } else {
+            Items.update(this._id, {$set: {name : name, registered : true}});
+        }
         // Clear form
         event.target.name.value = "";
         // Prevent default form submit
