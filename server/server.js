@@ -1,6 +1,7 @@
 var SET_ID_ROUTE = "set-id"
 var BROADCAST_BEACON_ROUTE = "broadcast-uuid"
 var PORT = "8001"
+var BROADCAST_IP_COMMAND = "python /home/ubuntu/Meteor-Placeholder/server/broadcast_ip.py"
 
 
 Meteor.startup(function () {
@@ -30,6 +31,17 @@ Meteor.startup(function () {
       items.forEach(function (item) {
         if (item.room && item.room._id == roomID) {
           Items.update(item._id, {$set: {name: null, registered: false, room: null}});
+        }
+      });
+    },
+
+    broadcastIP: function () {
+      var exec = Npm.require('child_process').exec;
+      var child = exec(BROADCAST_IP_COMMAND, function (err, stdout, stderr) {
+        if (stdout && stdout.length > 0) console.log("Stdout", stdout);
+        if (stderr && stderr.length > 0) console.log("Stderr", stderr);
+        if (err != null) {
+            console.log("Error", err);
         }
       });
     }
