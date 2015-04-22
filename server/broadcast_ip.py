@@ -38,7 +38,7 @@ the 1a doesn't seem to matter even though it's supposed to denote length of some
 ip = get_ip_address('wlan0')
 formatted_ip = ""
 for i in xrange(0, len(ip)):
-    formatted_ip += hex(ord(ip[i])) + " "
+    formatted_ip += hex(ord(ip[i]))[2:] + " "
 formatted_ip = formatted_ip.strip()
 """
 14 comes from: 9 bytes of packet header
