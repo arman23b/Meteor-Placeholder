@@ -21,12 +21,17 @@ Template.station.events({
     },
 
     "submit form": function (event) {
-        var name = event.target.name.value;
-        var room = Rooms.findOne({ name : Session.get("room") });
-        if (name == "" || room == null) {
-            return false;
+        var name = event.target.name.value.toUpperCase();
+        var station = Stations.findOne({name: name});
+        if (station != null) {
+            Notifications.error('Cannot register a station', "Station " + name + " already exists");
+        } else {
+            var room = Rooms.findOne({ name : Session.get("room") });
+            if (name == "" || room == null) {
+                return false;
+            }
+            Stations.update(this._id, {$set: {name : name, registered : true, room : room}});
         }
-        Stations.update(this._id, {$set: {name : name, registered : true, room : room}});
         // Clear form
         event.target.name.value = "";
         // Prevent default form submit

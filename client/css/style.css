@@ -107,6 +107,10 @@ div.info {
     color: #000;
 }
 
+.inactive.text-link > form:hover {
+    color: #000;
+}
+
 .inactive.text-link:hover {
     color: #fff;
     background: #000000;
