@@ -1,4 +1,5 @@
 import subprocess
+import threading
 import socket
 import struct
 import fcntl
@@ -8,6 +9,7 @@ HCI_DEVICE = "hci0"
 COMPANY_ID = "00 00"
 IP_PACKET_ID = "CD CD"
 IP_PACKET_END = "DE AD BE EF"
+BROADCAST_PACKET_PERIOD = 5.0
 
 
 def get_ip_address(ifname):
@@ -17,6 +19,11 @@ def get_ip_address(ifname):
         0x8915,  # SIOCGIFADDR
         struct.pack('256s', ifname[:15])
     )[20:24])
+
+
+# limit broadcast packet time
+def stop_broadcast():
+    subprocess.Popen(stopargs, stdin=subprocess.PIPE, stdout=devnull)
 
 
 # http://stackoverflow.com/questions/16151360/use-bluez-stack-as-a-peripheral-advertiser
@@ -62,3 +69,5 @@ devnull = open(os.devnull, 'wb')
 subprocess.Popen(stopargs, stdin=subprocess.PIPE, stdout=devnull)
 subprocess.Popen(bcargs, stdin=subprocess.PIPE, stdout=devnull)
 subprocess.Popen(startargs, stdin=subprocess.PIPE, stdout=devnull)
+
+threading.Timer(BROADCAST_PACKET_PERIOD, stop_broadcast).start()
