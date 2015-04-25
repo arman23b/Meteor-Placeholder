@@ -65,7 +65,7 @@ Meteor.startup(function () {
           });
       });
    }
-  }, 1*1000); // repeat every 30 seconds
+  }, 30*1000); // repeat every 30 seconds
 
 });
 
