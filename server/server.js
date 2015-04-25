@@ -1,5 +1,6 @@
 var SET_ID_ROUTE = "set-id"
 var BROADCAST_BEACON_ROUTE = "broadcast-uuid"
+var BROADCAST_IP_ROUTE = "broadcast-ip"
 var PORT = "8001"
 var BROADCAST_IP_COMMAND = "python /home/ubuntu/Meteor-Placeholder/server/broadcast_ip.py"
 
@@ -47,6 +48,25 @@ Meteor.startup(function () {
     }
 
   });
+
+  var myIP = null;
+  Meteor.setInterval(function () {
+    var newestIP = getLocalIP();
+    if (myIP != newestIP) {
+      myIP = newestIP;
+      console.log("Web Server IP changed to " + newestIP);
+      // Notify stations
+      var stations = Stations.find({});
+      stations.forEach(function (station) {
+        console.log("Broadcasting IP to station", station.ip);
+        HTTP.get("http://" + station.ip + ":" + PORT + "/" + BROADCAST_IP_ROUTE, 
+          function (err, res) {
+            if (err != null) console.log("Error", "Couldn't broadcast IP to " + station.ip);
+          });
+      });
+   }
+  }, 1*1000); // repeat every 30 seconds
+
 });
 
 
@@ -175,4 +195,18 @@ function getOrCreateStation(stationIpAddress) {
     station = Stations.findOne({ _id: id });
   }
   return station;
+}
+
+function getLocalIP () {
+  var os = Npm.require('os');
+  var wlan0 = os.networkInterfaces().wlan0;
+  
+  for (var i in wlan0) {
+    var obj = wlan0[i];
+    if (obj.family == "IPv4" && obj.internal == false) {
+      var myIP = obj.address;
+      return myIP;
+    }
+  }
+  return null;
 }
