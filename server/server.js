@@ -54,6 +54,11 @@ Meteor.startup(function () {
     var newestIP = getLocalIP();
     if (newestIP != myIP) {
       console.log("Web Server IP changed to " + newestIP);
+      // Update the ip of UDOO station
+      var udooStation = Stations.findOne({ip: myIP});
+      if (udooStation != null) {
+        Stations.update(udooStation._id, {$set: {ip: newestIP}});
+      }
     }
     myIP = newestIP;
     // Notify stations
