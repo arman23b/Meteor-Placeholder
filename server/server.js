@@ -52,56 +52,33 @@ Meteor.startup(function () {
   var myIP = null;
   Meteor.setInterval(function () {
     var newestIP = getLocalIP();
-    if (myIP != newestIP) {
-      myIP = newestIP;
+    if (newestIP != myIP) {
       console.log("Web Server IP changed to " + newestIP);
-      // Notify stations
-      var stations = Stations.find({});
-      stations.forEach(function (station) {
-        console.log("Broadcasting IP to station", station.ip);
-        HTTP.get("http://" + station.ip + ":" + PORT + "/" + BROADCAST_IP_ROUTE, 
-          function (err, res) {
-            if (err != null) console.log("Error", "Couldn't broadcast IP to " + station.ip);
-          });
-      });
-   }
+    }
+    myIP = newestIP;
+    // Notify stations
+    var stations = Stations.find({});
+    stations.forEach(function (station) {
+      console.log("Broadcasting IP to station", station.ip);
+      HTTP.get("http://" + station.ip + ":" + PORT + "/" + BROADCAST_IP_ROUTE, 
+        function (err, res) {
+          if (err != null) console.log("Error", "Couldn't broadcast IP to " + station.ip);
+        });
+    });
   }, 30*1000); // repeat every 30 seconds
 
 });
 
 
 Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
-
   var stationID = req.body.id;
   var stationIpAddress = this.request.headers["x-forwarded-for"];
-  var station = Stations.findOne({_id: stationID});
-  if (station == null) {
-    // No station with such id
-    station = getOrCreateStation(stationIpAddress);
-    // Need to send the new id
-    try {
-      var params = {data: JSON.stringify({"id": station._id})};
-      HTTP.post("http://" + stationIpAddress + ":" + PORT + "/" + SET_ID_ROUTE, {params: params});
-    }
-    catch (error) {
-      console.log("Error", "Couldn't send POST request to " + stationIpAddress)
-    }
-  } else {
-    // Station with this id is in database
-    if (station.ip != stationIpAddress) {
-      // Update ipAddress
-      Stations.update(station._id, {$set: {ip: stationIpAddress,
-                                           lastUpdate: new Date()}});
-    } else {
-      // Update lastUpdate time
-      Stations.update(station._id, {$set: {lastUpdate: new Date()}});
-    }
-  }
+  console.log("/newData request from " + stationIpAddress);
+  var stationID = updateOrCreateStation(stationID, stationIpAddress);
 
   var data = JSON.parse(req.body.data);
-
   for (var beaconId in data) {
-    var item = getOrCreateItem(beaconId, station, data[beaconId]);
+    var item = getOrCreateItem(beaconId, stationID, data[beaconId]);
     var closestStation = findClosestStation(item);
     if (closestStation != null && closestStation.registered) {
       Items.update(item._id, {$set: {room: closestStation.room,
@@ -113,33 +90,10 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
 
 
 Router.route("/sendHeartbeat", { where : 'server' }).post(function (req, res, next) {
-
-  // TODO: code reuse! Reuses lots of newData's code
   var stationID = req.body.id;
   var stationIpAddress = this.request.headers["x-forwarded-for"];
-  var station = Stations.findOne({_id: stationID});
-  if (station == null) {
-    // No station with such id
-    station = getOrCreateStation(stationIpAddress);
-    // Need to send the new id
-    try {
-      var params = {data: JSON.stringify({"id": station._id})};
-      HTTP.post("http://" + stationIpAddress + ":" + PORT + "/" + SET_ID_ROUTE, {params: params});
-    }
-    catch (error) {
-      console.log("Error", "Couldn't send POST request to " + stationIpAddress)
-    }
-  } else {
-    // Station with this id is in database
-    if (station.ip != stationIpAddress) {
-      // Update ipAddress
-      Stations.update(station._id, {$set: {ip: stationIpAddress,
-                                           lastUpdate: new Date()}});
-    } else {
-      // Update lastUpdate time
-      Stations.update(station._id, {$set: {lastUpdate: new Date()}});
-    }
-  }
+  console.log("/sendHeartbeat request from " + stationIpAddress);
+  updateOrCreateStation(stationID, stationIpAddress);
   res.end("");
 });
 
@@ -159,9 +113,8 @@ function findClosestStation(item) {
 }
 
 
-function getOrCreateItem(beaconId, station, rssi) {
+function getOrCreateItem(beaconId, stationID, rssi) {
   var item = Items.findOne({ beaconId : beaconId });
-  var stationID = station._id;
   if (item == null) {
     var distances = {};
     distances[stationID] = rssi;
@@ -184,18 +137,45 @@ function getOrCreateItem(beaconId, station, rssi) {
 }
 
 
-function getOrCreateStation(stationIpAddress) {
-  var station = Stations.findOne({ ip : stationIpAddress });
+function updateOrCreateStation(stationID, stationIpAddress) {
+  var station = Stations.findOne({_id: stationID});
   if (station == null) {
-    var id = Stations.insert({
-      registered: false,
-      ip: stationIpAddress,
-      lastUpdate: new Date()
-    });
-    station = Stations.findOne({ _id: id });
+    // No station with such id
+    station = Stations.findOne({ ip : stationIpAddress });
+    var idToSend;
+    if (station == null) {
+      // No station with such IP address
+      idToSend = Stations.insert({
+        registered: false,
+        ip: stationIpAddress,
+        lastUpdate: new Date()
+      });
+    } else {
+      idToSend = station._id;
+    }
+    // Send a new id to the station
+    try {
+      var params = {data: JSON.stringify({"id": idToSend})};
+      HTTP.post("http://" + stationIpAddress + ":" + PORT + "/" + SET_ID_ROUTE, {params: params});
+    }
+    catch (error) {
+      console.log("Error", "Couldn't send POST request to " + stationIpAddress)
+    }
+    return idToSend;
+  } else {
+    // Station with this id is in database
+    if (station.ip != stationIpAddress) {
+      // Update ipAddress
+      Stations.update(station._id, {$set: {ip: stationIpAddress,
+                                           lastUpdate: new Date()}});
+    } else {
+      // Update lastUpdate time
+      Stations.update(station._id, {$set: {lastUpdate: new Date()}});
+    }
+    return station._id;
   }
-  return station;
 }
+
 
 function getLocalIP () {
   var os = Npm.require('os');
@@ -209,4 +189,4 @@ function getLocalIP () {
     }
   }
   return null;
-}
+} 
