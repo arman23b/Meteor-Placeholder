@@ -26,18 +26,21 @@ Meteor.startup(function () {
       var stations = Stations.find({});
       stations.forEach(function (station) {
         if (station.room && station.room._id == roomID) {
-          Stations.update(station._id, {$set: {name: null, registered: false, room: null}});
+          Meteor.call('unregisterStation', station, function (err, res) {
+            if (err != null) console.error(err);
+          });
         }
       });
     },
 
-    removeRoomFromItems: function (roomID) {
+    unregisterStation: function (station) {
+      Stations.update(station._id, {$set: {name: null, registered: false, room: null}});
       var items = Items.find({});
       items.forEach(function (item) {
-        if (item.room && item.room._id == roomID) {
+        if (item.station && item.station._id == station._id) {
           Items.update(item._id, {$set: {name: null, registered: false, station: null}});
         }
-      });
+      });     
     },
 
     broadcastIP: function () {
