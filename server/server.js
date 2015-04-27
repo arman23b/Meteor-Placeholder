@@ -10,10 +10,14 @@ Meteor.startup(function () {
     broadcastUUID: function (uuid) {
       var stations = Stations.find({});
       stations.forEach(function (station) {
+        addLog("Sending POST request", "Broadcasting uuid to station " + station.ip);
         console.log("Broadcasting uuid to station", station.ip);
         HTTP.post("http://" + station.ip + ":" + PORT + "/" + BROADCAST_BEACON_ROUTE, 
           {params: {uuid: uuid}}, function (err, res) {
-            if (err != null) console.log("Error", "Couldn't broadcast uuid to " + station.ip);
+            if (err != null) {
+              addLog("Error", "Couldn't broadcast uuid to " + station.ip);
+              console.log("Error", "Couldn't broadcast uuid to " + station.ip);
+            }
           });
       });
     },
@@ -39,9 +43,16 @@ Meteor.startup(function () {
     broadcastIP: function () {
       var exec = Npm.require('child_process').exec;
       var child = exec(BROADCAST_IP_COMMAND, function (err, stdout, stderr) {
-        if (stdout && stdout.length > 0) console.log("Stdout", stdout);
-        if (stderr && stderr.length > 0) console.log("Stderr", stderr);
+        if (stdout && stdout.length > 0) {
+          addLog("Broadcasting IP with BLE", stdout.toString());
+          console.log("Stdout", stdout);
+        }
+        if (stderr && stderr.length > 0) {
+          addLog("Broadcasting IP with BLE", stderr.toString());
+          console.log("Stderr", stderr);
+        }
         if (err != null) {
+            addLog("Error", err.toString());
             console.log("Error", err);
         }
       });
@@ -53,6 +64,7 @@ Meteor.startup(function () {
   Meteor.setInterval(function () {
     var newestIP = getLocalIP();
     if (newestIP != myIP) {
+      addLog("Broadcasting IP with WIFI", "Web Server IP changed to " + newestIP);
       console.log("Web Server IP changed to " + newestIP);
       // Update the ip of UDOO station
       var udooStation = Stations.findOne({ip: myIP});
@@ -64,10 +76,14 @@ Meteor.startup(function () {
     // Notify stations
     var stations = Stations.find({});
     stations.forEach(function (station) {
+      addLog("Broadcasting IP with WIFI", "Broadcasting IP to station " + station.ip);
       console.log("Broadcasting IP to station", station.ip);
       HTTP.get("http://" + station.ip + ":" + PORT + "/" + BROADCAST_IP_ROUTE, 
         function (err, res) {
-          if (err != null) console.log("Error", "Couldn't broadcast IP to " + station.ip);
+          if (err != null) {
+            addLog("Error", "Couldn't broadcast IP to " + station.ip);
+            console.log("Error", "Couldn't broadcast IP to " + station.ip);
+          }
         });
     });
   }, 30*1000); // repeat every 30 seconds
@@ -78,6 +94,7 @@ Meteor.startup(function () {
 Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
   var stationID = req.body.id;
   var stationIpAddress = this.request.headers["x-forwarded-for"];
+  addLog("Incoming POST request", "/newData request from " + stationIpAddress);
   console.log("/newData request from " + stationIpAddress);
   var stationID = updateOrCreateStation(stationID, stationIpAddress);
 
@@ -97,6 +114,7 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
 Router.route("/sendHeartbeat", { where : 'server' }).post(function (req, res, next) {
   var stationID = req.body.id;
   var stationIpAddress = this.request.headers["x-forwarded-for"];
+  addLog("Incoming POST request", "/sendHeartbeat request from " + stationIpAddress);
   console.log("/sendHeartbeat request from " + stationIpAddress);
   updateOrCreateStation(stationID, stationIpAddress);
   res.end("");
@@ -164,7 +182,8 @@ function updateOrCreateStation(stationID, stationIpAddress) {
       HTTP.post("http://" + stationIpAddress + ":" + PORT + "/" + SET_ID_ROUTE, {params: params});
     }
     catch (error) {
-      console.log("Error", "Couldn't send POST request to " + stationIpAddress)
+      addLog("Error", "Couldn't send POST request to " + stationIpAddress);
+      console.log("Error", "Couldn't send POST request to " + stationIpAddress);
     }
     return idToSend;
   } else {
@@ -195,3 +214,10 @@ function getLocalIP () {
   }
   return null;
 } 
+
+
+function addLog(tag, message) {
+  Logs.insert({timestamp: moment().format('hh:mm:ss a, MMMM Do'),
+               tag: tag,
+               message: message}); 
+}

@@ -1,0 +1,19 @@
+<template name="logs">
+    <h3 class="text title">Logs</h3>
+    <div class="logs">
+        <table class="u-full-width">
+            <thead>
+                <tr>
+                    <th class="center">Timestamp</th>
+                    <th class="center">Tag</th>
+                    <th class="center">Log Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each logs}}
+                {{>log}}
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</template>
