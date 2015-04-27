@@ -38,7 +38,7 @@ Meteor.startup(function () {
       var items = Items.find({});
       items.forEach(function (item) {
         if (item.station && item.station._id == station._id) {
-          Items.update(item._id, {$set: {name: null, registered: false, station: null}});
+          Items.update(item._id, {$set: {station: null}});
         }
       });     
     },
