@@ -35,7 +35,7 @@ Meteor.startup(function () {
       var items = Items.find({});
       items.forEach(function (item) {
         if (item.room && item.room._id == roomID) {
-          Items.update(item._id, {$set: {name: null, registered: false, room: null}});
+          Items.update(item._id, {$set: {name: null, registered: false, station: null}});
         }
       });
     },
@@ -109,7 +109,7 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
     var item = getOrCreateItem(beaconId, stationID, data[beaconId]);
     var closestStation = findClosestStation(item);
     if (closestStation != null && closestStation.registered) {
-      Items.update(item._id, {$set: {room: closestStation.room,
+      Items.update(item._id, {$set: {station: closestStation,
                                      lastUpdate: new Date()}});
     }
   }

@@ -12,8 +12,9 @@
             </form>
             {{/if}}
             <div class="info">beaconId : {{beaconId}}</div>
-            {{#if room}}
-            <div class="info">room : {{room.name}}</div>
+            {{#if station}}
+            <div class="info">station : {{station.name}}</div>
+            <div class="info">room : {{station.room.name}}</div>
             {{/if}}
             <div class="info">last update : {{timestamp}}</div>
             {{#if registered}}
