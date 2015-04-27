@@ -5,7 +5,6 @@ var PORT = "8001"
 var BROADCAST_IP_COMMAND = "python /home/ubuntu/Meteor-Placeholder/server/broadcast_ip.py"
 var txPower = -4.0;
 
-
 Meteor.startup(function () {
   Meteor.methods({
     broadcastUUID: function (uuid) {
@@ -67,11 +66,17 @@ Meteor.startup(function () {
     if (newestIP != myIP) {
       addLog("Broadcasting IP with WIFI", "Web Server IP changed to " + newestIP);
       console.log("Web Server IP changed to " + newestIP);
-      // Update the ip of UDOO station
-      var udooStation = Stations.findOne({ip: myIP});
-      if (udooStation != null) {
+    }
+    // Update the ip of UDOO station
+    server_ip = "http://" + newestIP + ":3000"
+    var fs = Npm.require("fs");
+    fs.writeFile("/home/ubuntu/station/ip_address.conf", server_ip, function (err) {
+        if (err) console.error(err);
+        console.log("Overwrite ip_addrees.conf file with " + server_ip);
+    });
+    var udooStation = Stations.findOne({ip: myIP});
+    if (udooStation != null) {
         Stations.update(udooStation._id, {$set: {ip: newestIP}});
-      }
     }
     myIP = newestIP;
     // Notify stations
@@ -131,7 +136,7 @@ function findClosestStation(item) {
     var work_rssi = distances[stationID];
     // formula to calculate distance from rssi and tx. need to calibrate it
     // TODO: regression d=A*(rssi/tx)^B+C
-    distanceMap[stationID] = Math.pow(10,((txPower - work_rssi)/(10*2)));
+    newDistanceMap[stationID] = Math.pow(10,((txPower - work_rssi)/(10*2)));
     if (work_rssi >= maxRSSI) {
       maxRSSI = work_rssi;
       closestStationID = stationID;
@@ -214,7 +219,7 @@ function updateOrCreateStation(stationID, stationIpAddress) {
 
 
 function getLocalIP () {
-  var os = Npm.require('os');
+  var os = Npm.require("os");
   var wlan0 = os.networkInterfaces().wlan0;
 
   for (var i in wlan0) {
@@ -233,7 +238,6 @@ function addLog(tag, message) {
   if (Logs.find({}).count() > 100) {
     var oldLog = Logs.find({}, {sort: {timestamp:1}, limit: 1}).fetch()[0];
     Logs.remove({_id: oldLog._id});
-    console.log(Logs.find({}).count());
   }
   Logs.insert({timestamp: moment().format('hh:mm:ss a, MMMM Do'),
                tag: tag,
