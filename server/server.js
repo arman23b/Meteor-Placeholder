@@ -3,6 +3,7 @@ var BROADCAST_BEACON_ROUTE = "broadcast-uuid"
 var BROADCAST_IP_ROUTE = "broadcast-ip"
 var PORT = "8001"
 var BROADCAST_IP_COMMAND = "python /home/ubuntu/Meteor-Placeholder/server/broadcast_ip.py"
+var txPower = -4.0;
 
 Meteor.startup(function () {
   Meteor.methods({
@@ -11,7 +12,7 @@ Meteor.startup(function () {
       stations.forEach(function (station) {
         addLog("Sending POST request", "Broadcasting uuid to station " + station.ip);
         console.log("Broadcasting uuid to station", station.ip);
-        HTTP.post("http://" + station.ip + ":" + PORT + "/" + BROADCAST_BEACON_ROUTE, 
+        HTTP.post("http://" + station.ip + ":" + PORT + "/" + BROADCAST_BEACON_ROUTE,
           {params: {uuid: uuid}}, function (err, res) {
             if (err != null) {
               addLog("Error", "Couldn't broadcast uuid to " + station.ip);
@@ -83,7 +84,7 @@ Meteor.startup(function () {
     stations.forEach(function (station) {
       addLog("Broadcasting IP with WIFI", "Broadcasting IP to station " + station.ip);
       console.log("Broadcasting IP to station", station.ip);
-      HTTP.get("http://" + station.ip + ":" + PORT + "/" + BROADCAST_IP_ROUTE, 
+      HTTP.get("http://" + station.ip + ":" + PORT + "/" + BROADCAST_IP_ROUTE,
         function (err, res) {
           if (err != null) {
             addLog("Error", "Couldn't broadcast IP to " + station.ip);
@@ -130,13 +131,19 @@ function findClosestStation(item) {
   var distances = item.distances;
   var maxRSSI = -10000;
   var closestStationID;
+  var newDistanceMap = item.distanceMap;
   for (var stationID in distances) {
-    if (distances[stationID] >= maxRSSI) {
-      maxRSSI = distances[stationID];
+    var work_rssi = distances[stationID];
+    // formula to calculate distance from rssi and tx. need to calibrate it
+    // TODO: regression d=A*(rssi/tx)^B+C
+    distanceMap[stationID] = Math.pow(10,((txPower - work_rssi)/(10*2)));
+    if (work_rssi >= maxRSSI) {
+      maxRSSI = work_rssi;
       closestStationID = stationID;
     }
   }
   var closestStation = Stations.findOne({_id : closestStationID});
+  Items.update(item._id, {$set: {distanceMap: newDistanceMap}});
   return closestStation;
 }
 
@@ -145,11 +152,16 @@ function getOrCreateItem(beaconId, stationID, rssi) {
   var item = Items.findOne({ beaconId : beaconId });
   if (item == null) {
     var distances = {};
+    var distanceMap = {};
     distances[stationID] = rssi;
+    // formula to calculate distance from rssi and tx. need to calibrate it
+    // TODO: regression d=A*(rssi/tx)^B+C
+    distanceMap[stationID] = Math.pow(10,((txPower - rssi)/(10*2)));
     var id = Items.insert({
       registered: false,
       beaconId: beaconId,
       distances: distances,
+      distanceMap: distanceMap,
       lastUpdate: new Date()
     });
     item = Items.findOne({ _id: id });
@@ -209,7 +221,7 @@ function updateOrCreateStation(stationID, stationIpAddress) {
 function getLocalIP () {
   var os = Npm.require("os");
   var wlan0 = os.networkInterfaces().wlan0;
-  
+
   for (var i in wlan0) {
     var obj = wlan0[i];
     if (obj.family == "IPv4" && obj.internal == false) {
@@ -218,7 +230,7 @@ function getLocalIP () {
     }
   }
   return null;
-} 
+}
 
 
 function addLog(tag, message) {
@@ -229,5 +241,5 @@ function addLog(tag, message) {
   }
   Logs.insert({timestamp: moment().format('hh:mm:ss a, MMMM Do'),
                tag: tag,
-               message: message}); 
+               message: message});
 }
