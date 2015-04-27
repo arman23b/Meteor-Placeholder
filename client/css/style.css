@@ -103,7 +103,7 @@ div.info {
 }
 
 .active.text-link:hover {
-    color: #fff;
+    color: #000;
     background: #33C3F0;
 }
 
