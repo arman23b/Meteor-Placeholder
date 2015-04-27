@@ -10,11 +10,13 @@
         <tbody>
             <tr>
                 <td class="four columns no-border">
-                    <ul class="popover-list" id="rooms-list">
-                        {{#each rooms}}
-                        {{>room}}
-                        {{/each}}
-                    </ul>
+                    <div class="scroll-column">
+                        <ul class="popover-list" id="rooms-list">
+                            {{#each rooms}}
+                            {{>room}}
+                            {{/each}}
+                        </ul>
+                    </div>
                     <form class="new-room">
                         <input type="submit" value="Add" class="inline-button">
                         <div class="same-line">
@@ -23,18 +25,22 @@
                     </form>
                 </td>
                 <td class="four columns no-border">
-                    <ul class="popover-list" id="stations-list">
-                        {{#each stations}}
-                        {{>station}}
-                        {{/each}}
-                    </ul>
+                    <div class="scroll-column">
+                        <ul class="popover-list" id="stations-list">
+                            {{#each stations}}
+                            {{>station}}
+                            {{/each}}
+                        </ul>
+                    </div>
                 </td>
                 <td class="four columns no-border">
-                    <ul class="popover-list" id="items-list">
-                        {{#each items}}
-                        {{>item}}
-                        {{/each}}
-                    </ul>
+                    <div class="scroll-column">
+                        <ul class="popover-list" id="items-list">
+                            {{#each items}}
+                            {{>item}}
+                            {{/each}}
+                        </ul>
+                    </div>
                 </td>
             </tr>
         </tbody>

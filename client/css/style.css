@@ -144,3 +144,8 @@ td.log-td {
     padding: 0.5em;
     margin: 0.5em;
 }
+
+.scroll-column {
+    max-height: 360px;
+    overflow: auto;
+}
