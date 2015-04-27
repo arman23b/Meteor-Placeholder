@@ -49,7 +49,7 @@ Meteor.startup(function () {
           console.log("Stdout", stdout);
         }
         if (stderr && stderr.length > 0) {
-          addLog("Broadcasting IP with BLE", stderr.toString());
+          // addLog("Broadcasting IP with BLE", stderr.toString());
           console.log("Stderr", stderr);
         }
         if (err != null) {
@@ -229,6 +229,12 @@ function getLocalIP () {
 
 
 function addLog(tag, message) {
+  // console.log(Logs.find({}));
+  if (Logs.find({}).count() > 100) {
+    var oldLog = Logs.find({}, {sort: {timestamp:1}, limit: 1}).fetch()[0];
+    Logs.remove({_id: oldLog._id});
+    console.log(Logs.find({}).count());
+  }
   Logs.insert({timestamp: moment().format('hh:mm:ss a, MMMM Do'),
                tag: tag,
                message: message});

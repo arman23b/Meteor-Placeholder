@@ -103,7 +103,7 @@ div.info {
 }
 
 .active.text-link:hover {
-    color: #fff;
+    color: #000;
     background: #33C3F0;
 }
 
@@ -135,12 +135,12 @@ input:invalid {
     text-align: center;
 }
 
-table {
+table.logs-table {
     border-collapse: collapse;
     border-spacing: 0em;
 }
 
-td {
+td.log-td {
     padding: 0.5em;
     margin: 0.5em;
 }

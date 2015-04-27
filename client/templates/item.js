@@ -33,7 +33,7 @@ Template.item.events({
     },
 
     "click .unregister-button": function (event) {
-        Items.update(this._id, {$set: {name: null, registered : false, room: null, lastUpdate : new Date()}});
+        Items.update(this._id, {$set: {name: null, registered : false, room: null}});
         return true;
     },
 
