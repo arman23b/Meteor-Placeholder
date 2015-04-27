@@ -12,7 +12,12 @@ Template.station.helpers({
         } else {
             return "active";
         }
+    },
+
+    timestamp: function () {
+        return moment(this.lastUpdate).format('hh:mm:ss a, MMMM Do');
     }
+
 });
 
 Template.station.events({

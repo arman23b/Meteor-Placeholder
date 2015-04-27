@@ -1,3 +1,7 @@
+body {
+    padding-bottom: 5em;
+}
+
 div.same-line {
     overflow: hidden;
     padding: 0em 0em;
@@ -119,4 +123,24 @@ div.info {
 
 input:invalid {
   border:1px solid red;
+}
+
+.logs {
+    height: 500px;
+    overflow: auto;
+    font-size: 0.6em;
+}
+
+.center {
+    text-align: center;
+}
+
+table.logs-table {
+    border-collapse: collapse;
+    border-spacing: 0em;
+}
+
+td.log-td {
+    padding: 0.5em;
+    margin: 0.5em;
 }
