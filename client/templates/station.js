@@ -44,7 +44,7 @@ Template.station.events({
     },
 
     "click button": function (event) {
-        Stations.update(this._id, {$set: {name: null, registered : false, room: null, lastUpdate : new Date()}});
+        Stations.update(this._id, {$set: {name: null, registered : false, room: null}});
         return true;
     }
 });
