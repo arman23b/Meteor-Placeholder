@@ -4,9 +4,6 @@ Template.room.events({
         Meteor.call('removeRoomFromStations', this._id, function (err, res) {
             if (err != null) console.log("Error", "Couldn't remove stations from room");
         });
-        Meteor.call('removeRoomFromItems', this._id, function (err, res) {
-            if (err != null) console.log("Error", "Couldn't remove items from room");
-        });
         Rooms.remove(this._id);
         return true;
     }

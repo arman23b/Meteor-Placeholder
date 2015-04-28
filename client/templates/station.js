@@ -44,7 +44,9 @@ Template.station.events({
     },
 
     "click button": function (event) {
-        Stations.update(this._id, {$set: {name: null, registered : false, room: null}});
+        Meteor.call("unregisterStation", this, function (err, res) {
+            if (err != null) console.error(err);
+        });
         return true;
     }
 });
