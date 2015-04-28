@@ -1,3 +1,7 @@
+Meteor.startup(function () {
+    Notifications.defaultOptions.timeout = 2000;
+});
+
 // No iron-router on client 
 Router.options.autoStart = false;
 
