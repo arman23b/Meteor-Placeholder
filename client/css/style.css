@@ -154,3 +154,7 @@ td.log-td {
     max-height: 360px;
     overflow: auto;
 }
+
+.not-in-lock-room {
+    color: red;
+}

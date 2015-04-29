@@ -39,6 +39,7 @@ Meteor.startup(function () {
       items.forEach(function (item) {
         if (item.station && item.station._id == station._id) {
           Items.update(item._id, {$set: {station: null}});
+          Session.set(item._id, null);
         }
       });     
     },
@@ -114,6 +115,7 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
     if (closestStation != null && closestStation.registered) {
       Items.update(item._id, {$set: {station: closestStation,
                                      lastUpdate: new Date()}});
+      Session.set(item._id, closestStation.room.name);
     }
   }
   res.end("");

@@ -14,7 +14,7 @@
             <div class="info">beaconId : {{beaconId}}</div>
             {{#if station}}
                 <div class="info">station : {{station.name}}</div>
-                <div class="info">room : {{station.room.name}}</div>
+                <div class="info {{not_in_lock_room}}">room : {{station.room.name}}</div>
             {{/if}}
             <div class="info">last update : {{timestamp}}</div>
             <div class="info">Rooms to lock to :
