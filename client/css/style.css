@@ -1,3 +1,20 @@
+.red {
+    color: red;
+}
+
+.blue {
+    color: blue;
+}
+
+.black {
+    color: black;
+}
+
+ul.notifications {
+    width: 100%;
+    text-align: center;
+}
+
 body {
     padding-bottom: 5em;
 }

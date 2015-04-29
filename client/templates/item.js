@@ -12,13 +12,29 @@ Template.item.helpers({
 
     timestamp: function () {
         return moment(this.lastUpdate).format('hh:mm:ss a, MMMM Do');
+    },
+
+    in_lock_room: function () {
+        if (this.station && ((this.roomsToLock == null) || (this.roomsToLock.indexOf(this.station.room.name) == -1))) {
+            return "red";
+        }
+        return "black";
+    },
+
+    rooms: function () {
+        return Rooms.find({});
     }
 
 });
 
 Template.item.events({
 
-    "submit form": function (event) {
+    "change select": function (event) {
+        var roomNamesToLock = $(event.target).val();
+        Items.update(this._id, {$set: {roomsToLock: roomNamesToLock}});
+    },
+
+    "submit form": function (event, template) {
         var name = event.target.name.value.toUpperCase();
         var item = Items.findOne({name: name});
         if (item != null) {
@@ -44,4 +60,20 @@ Template.item.events({
             if (err != null) console.log("Error", "Couldn't broadcast uuid to " + station.ip);
         });
     },
+});
+
+Template.item.onRendered(function() {
+    this.$("select.multiselect").multiselect({
+        selectedList: true
+    });
+    var item = this;
+    var toClick = [];
+    this.$("select.multiselect").multiselect("widget").find(":checkbox").each(function(){
+        if (item.data.roomsToLock && item.data.roomsToLock.indexOf(this.value) >= 0) {
+            toClick.push(this);
+        }
+    });
+    for (var i in toClick) {
+        toClick[i].click();
+    }
 });

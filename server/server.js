@@ -249,7 +249,9 @@ function addLog(tag, message) {
   // console.log(Logs.find({}));
   if (Logs.find({}).count() > 100) {
     var oldLog = Logs.find({}, {sort: {timestamp:1}, limit: 1}).fetch()[0];
-    Logs.remove({_id: oldLog._id});
+    if (oldLog != null) {
+        Logs.remove({_id: oldLog._id});
+    }
   }
   Logs.insert({timestamp: moment().format('hh:mm:ss a, MMMM Do'),
                tag: tag,

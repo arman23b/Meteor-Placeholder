@@ -9,7 +9,3 @@ Template.room.events({
     }
 
 });
-
-Template.room.onRendered(function() {
-    this.$("#example").multiselect();
-});
