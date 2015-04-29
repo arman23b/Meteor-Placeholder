@@ -2,23 +2,30 @@
     <li class="popover-item">
         <a class="text-link {{is_active}}">
             {{#if registered}}
-            <div class="name">{{name}}</div>
+                <div class="name">{{name}}</div>
             {{else}}
-            <form>
-                <input type="submit" value="Register" class="inline-button">
-                <div class="same-line">
-                    <input type="text" name="name" placeholder="Item name"/>
-                </div>
-            </form>
+                <form>
+                    <input type="submit" value="Register" class="inline-button">
+                    <div class="same-line">
+                        <input type="text" name="name" placeholder="Item name"/>
+                    </div>
+                </form>
             {{/if}}
             <div class="info">beaconId : {{beaconId}}</div>
             {{#if station}}
-            <div class="info">station : {{station.name}}</div>
-            <div class="info">room : {{station.room.name}}</div>
+                <div class="info">station : {{station.name}}</div>
+                <div class="info">room : {{station.room.name}}</div>
             {{/if}}
             <div class="info">last update : {{timestamp}}</div>
+            <div class="info">Rooms to lock to :
+                <select class="multiselect" name="roomLockSelect" multiple="multiple">
+                    {{#each rooms}}
+                        <option>{{name}}</option>
+                    {{/each}}
+                </select>
+            </div>
             {{#if registered}}
-            <button class="unregister-button">unregister item</button>
+                <button class="unregister-button">unregister item</button>
             {{/if}}
             <button class="search-button">Search</button>
         </a>
