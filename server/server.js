@@ -82,6 +82,15 @@ Meteor.startup(function () {
         Stations.update(udooStation._id, {$set: {ip: newestIP}});
     }
     myIP = newestIP;
+    // Notify webapp
+    try {
+      var params = {data: JSON.stringify({"ip": server_ip})};
+      HTTP.post("http://placeholder-ipupdater.meteor.com/set-ip", {params: params});
+    }
+    catch (error) {
+      addLog("Error", "Couldn't send POST request to webapp");
+    }
+
     // Notify stations
     var stations = Stations.find({});
     stations.forEach(function (station) {
