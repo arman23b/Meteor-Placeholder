@@ -39,7 +39,6 @@ Meteor.startup(function () {
       items.forEach(function (item) {
         if (item.station && item.station._id == station._id) {
           Items.update(item._id, {$set: {station: null}});
-          Session.set(item._id, null);
         }
       });     
     },
@@ -115,7 +114,6 @@ Router.route("/newData", { where : 'server' }).post(function (req, res, next) {
     if (closestStation != null && closestStation.registered) {
       Items.update(item._id, {$set: {station: closestStation,
                                      lastUpdate: new Date()}});
-      Session.set(item._id, closestStation.room.name);
     }
   }
   res.end("");
@@ -242,7 +240,9 @@ function addLog(tag, message) {
   // console.log(Logs.find({}));
   if (Logs.find({}).count() > 100) {
     var oldLog = Logs.find({}, {sort: {timestamp:1}, limit: 1}).fetch()[0];
-    Logs.remove({_id: oldLog._id});
+    if (oldLog != null) {
+        Logs.remove({_id: oldLog._id});
+    }
   }
   Logs.insert({timestamp: moment().format('hh:mm:ss a, MMMM Do'),
                tag: tag,

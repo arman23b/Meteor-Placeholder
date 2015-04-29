@@ -14,12 +14,11 @@ Template.item.helpers({
         return moment(this.lastUpdate).format('hh:mm:ss a, MMMM Do');
     },
 
-    not_in_lock_room: function () {
-        var roomName = Session.get(this._id);
-        if (roomName && this.roomsToLock && this.roomsToLock.indexOf(roomName) >= -1) {
-            return "not-in-lock-room";
+    in_lock_room: function () {
+        if (this.station && ((this.roomsToLock == null) || (this.roomsToLock.indexOf(this.station.room.name) == -1))) {
+            return "red";
         }
-        return "";
+        return "black";
     },
 
     rooms: function () {

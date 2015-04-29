@@ -1,3 +1,15 @@
+.red {
+    color: red;
+}
+
+.blue {
+    color: blue;
+}
+
+.black {
+    color: black;
+}
+
 ul.notifications {
     width: 100%;
     text-align: center;
@@ -153,8 +165,4 @@ td.log-td {
 .scroll-column {
     max-height: 360px;
     overflow: auto;
-}
-
-.not-in-lock-room {
-    color: red;
 }
