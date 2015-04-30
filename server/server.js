@@ -59,6 +59,10 @@ Meteor.startup(function () {
             console.log("Error", err);
         }
       });
+    },
+
+    clearLogs: function () {
+      Logs.remove({});
     }
 
   });
@@ -247,7 +251,7 @@ function getLocalIP () {
 
 function addLog(tag, message) {
   // console.log(Logs.find({}));
-  if (Logs.find({}).count() > 100) {
+  while (Logs.find({}).count() > 100) {
     var oldLog = Logs.find({}, {sort: {timestamp: 1}, limit: 1}).fetch()[0];
     if (oldLog != null) {
         Logs.remove({_id: oldLog._id});
