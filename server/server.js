@@ -153,7 +153,8 @@ function findClosestStation(item) {
     // formula to calculate distance from rssi and tx. need to calibrate it
     // TODO: regression d=A*(rssi/tx)^B+C
     newDistanceMap[stationID] = Math.pow(10,((txPower - work_rssi)/(10*2)));
-    if (work_rssi >= maxRSSI) {
+    var station = Stations.findOne({_id: stationID});
+    if (station != null && work_rssi >= maxRSSI) {
       maxRSSI = work_rssi;
       closestStationID = stationID;
     }

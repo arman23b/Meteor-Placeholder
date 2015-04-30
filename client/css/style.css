@@ -163,6 +163,6 @@ td.log-td {
 }
 
 .scroll-column {
-    max-height: 360px;
+    max-height: 400px;
     overflow: auto;
 }
