@@ -148,11 +148,21 @@ function findClosestStation(item) {
   var maxRSSI = -10000;
   var closestStationID;
   var newDistanceMap = item.distanceMap;
+  var curTime = new Date();
   for (var stationID in distances) {
-    var work_rssi = distances[stationID];
+    var work_rssi = distances[stationID].rssi;
+    var lastUpdate = distances[stationID].lastUpdate;
     // formula to calculate distance from rssi and tx. need to calibrate it
     // TODO: regression d=A*(rssi/tx)^B+C
     newDistanceMap[stationID] = Math.pow(10,((txPower - work_rssi)/(10*2)));
+
+    // make sure distance entry has been updated recently
+    var timeDiff = curTime - lastUpdate;
+    var diffSecs = Math.ceil(timeDiff / 1000);
+    if (diffSecs > TIMEOUT) {
+      continue;
+    }
+
     var station = Stations.findOne({_id: stationID});
     if (station != null && work_rssi >= maxRSSI) {
       maxRSSI = work_rssi;
@@ -170,7 +180,7 @@ function getOrCreateItem(beaconId, stationID, rssi) {
   if (item == null) {
     var distances = {};
     var distanceMap = {};
-    distances[stationID] = rssi;
+    distances[stationID] = {rssi: rssi, lastUpdate: new Date()};
     // formula to calculate distance from rssi and tx. need to calibrate it
     // TODO: regression d=A*(rssi/tx)^B+C
     distanceMap[stationID] = Math.pow(10,((txPower - rssi)/(10*2)));
@@ -186,7 +196,7 @@ function getOrCreateItem(beaconId, stationID, rssi) {
   } else {
     // Update or add new rssi value for this station
     var newDistances = item.distances;
-    newDistances[stationID] = rssi;
+    newDistances[stationID] = {rssi: rssi, lastUpdate: new Date()};
     Items.update(item._id, {$set: {distances: newDistances,
                                    lastUpdate: new Date()}});
     return item;
