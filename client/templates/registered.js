@@ -28,4 +28,22 @@ Template.registered.events({
         return false;
     },
 
+    "click #clearRooms": function (event) {
+        Meteor.call("clearRooms", function (err, res) {
+            if (err != null) console.error(err);
+        });
+    },
+
+    "click #clearStations": function (event) {
+        Meteor.call("clearStations", function (err, res) {
+            if (err != null) console.error(err);
+        });
+    },
+
+    "click #clearItems": function (event) {
+        Meteor.call("clearItems", function (err, res) {
+            if (err != null) console.error(err);
+        });
+    }
+
 });

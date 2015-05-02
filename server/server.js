@@ -63,6 +63,18 @@ Meteor.startup(function () {
 
     clearLogs: function () {
       Logs.remove({});
+    },
+
+    clearRooms: function () {
+      Rooms.remove({});
+    },
+
+    clearStations: function () {
+      Stations.remove({});
+    },
+
+    clearItems: function () {
+      Items.remove({});
     }
 
   });
