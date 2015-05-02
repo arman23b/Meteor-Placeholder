@@ -67,48 +67,8 @@ Meteor.startup(function () {
 
   });
 
-  var myIP = null;
-  Meteor.setInterval(function () {
-    var newestIP = getLocalIP();
-    if (newestIP != myIP) {
-      addLog("Broadcasting IP with WIFI", "Web Server IP changed to " + newestIP);
-      console.log("Web Server IP changed to " + newestIP);
-    }
-    // Update the ip of UDOO station
-    server_ip = "http://" + newestIP + ":3000"
-    var fs = Npm.require("fs");
-    fs.writeFile("/home/ubuntu/station/ip_address.conf", server_ip, function (err) {
-        if (err) console.error(err);
-        console.log("Overwrite ip_addrees.conf file with " + server_ip);
-    });
-    var udooStation = Stations.findOne({ip: myIP});
-    if (udooStation != null) {
-        Stations.update(udooStation._id, {$set: {ip: newestIP}});
-    }
-    myIP = newestIP;
-    // Notify webapp
-    try {
-      var params = {data: JSON.stringify({"ip": server_ip})};
-      HTTP.post("http://placeholder-ipupdater.meteor.com/set-ip", {params: params});
-    }
-    catch (error) {
-      addLog("Error", "Couldn't send POST request to webapp");
-    }
-
-    // Notify stations
-    var stations = Stations.find({});
-    stations.forEach(function (station) {
-      addLog("Broadcasting IP with WIFI", "Broadcasting IP to station " + station.ip);
-      console.log("Broadcasting IP to station", station.ip);
-      HTTP.get("http://" + station.ip + ":" + PORT + "/" + BROADCAST_IP_ROUTE,
-        function (err, res) {
-          if (err != null) {
-            addLog("Error", "Couldn't broadcast IP to " + station.ip);
-            console.log("Error", "Couldn't broadcast IP to " + station.ip);
-          }
-        });
-    });
-  }, 30*1000); // repeat every 30 seconds
+  sendIPAddress();
+  Meteor.setInterval(sendIPAddress, 30*1000); // repeat every 30 seconds
 
 });
 
@@ -272,4 +232,38 @@ function addLog(tag, message) {
   Logs.insert({timestamp: new Date(),
                tag: tag,
                message: message});
+}
+
+function sendIPAddress () {
+  var newestIP = getLocalIP();
+  addLog("Broadcasting IP with WIFI", "Web Server IP is " + newestIP);
+  console.log("Web Server IP is " + newestIP);
+  // Update the ip of UDOO station
+  server_ip = "http://" + newestIP + ":3000"
+  var fs = Npm.require("fs");
+  fs.writeFile("/home/ubuntu/station/ip_address.conf", server_ip, function (err) {
+      if (err) console.error(err);
+      console.log("Overwrite ip_addrees.conf file with " + server_ip);
+  });
+  // Notify webapp
+  try {
+    var params = {data: JSON.stringify({"ip": server_ip})};
+    HTTP.post("http://placeholder-ipupdater.meteor.com/set-ip", {params: params});
+  }
+  catch (error) {
+    addLog("Error", "Couldn't send POST request to webapp");
+  }
+  // Notify stations
+  var stations = Stations.find({});
+  stations.forEach(function (station) {
+    addLog("Broadcasting IP with WIFI", "Broadcasting IP to station " + station.ip);
+    console.log("Broadcasting IP to station", station.ip);
+    HTTP.get("http://" + station.ip + ":" + PORT + "/" + BROADCAST_IP_ROUTE,
+      function (err, res) {
+        if (err != null) {
+          addLog("Error", "Couldn't broadcast IP to " + station.ip);
+          console.log("Error", "Couldn't broadcast IP to " + station.ip);
+        }
+      });
+  });
 }
