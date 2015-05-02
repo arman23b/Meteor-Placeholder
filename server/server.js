@@ -219,6 +219,7 @@ function updateOrCreateStation(stationID, stationIpAddress) {
       });
     } else {
       idToSend = station._id;
+      Stations.update(station._id, {$set: {lastUpdate: new Date()}});
     }
     // Send a new id to the station
     try {
