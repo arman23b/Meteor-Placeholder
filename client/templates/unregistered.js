@@ -11,6 +11,7 @@ Template.unregistered.helpers({
         var expireTime = new Date();
         expireTime.setSeconds(expireTime.getSeconds() - TIMEOUT);
         return Items.find({registered: false,
-                           lastUpdate: {$gte: expireTime}});
+                           lastUpdate: {$gte: expireTime}},
+                           {sort: {beaconId: 1}});
     },
 });

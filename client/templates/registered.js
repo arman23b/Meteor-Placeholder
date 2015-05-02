@@ -6,7 +6,7 @@ Template.registered.helpers({
         return Stations.find({registered: true});
     },
     items: function () {
-        return Items.find({registered: true});
+        return Items.find({registered: true}, {sort: {beaconId: 1}});
     },
 });
 
